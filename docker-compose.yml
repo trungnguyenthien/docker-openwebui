@@ -22,7 +22,7 @@ services:
     container_name: mcp-github
     environment:
       - GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN} # <--- Sẽ lấy từ biến môi trường
-    command: npx -y @modelcontextprotocol/server-github
+    entrypoint: ["mcpo", "--", "npx", "-y", "@modelcontextprotocol/server-github"]
     ports:
       - "51100:8000"
     restart: always
