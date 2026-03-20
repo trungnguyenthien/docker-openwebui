@@ -1,0 +1,31 @@
+services:
+  # --- Service 1: Open WebUI ---
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    ports:
+      - "3301:8080"
+    volumes:
+      - open-webui-data:/app/backend/data
+    environment:
+      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY} # Để bảo mật session
+      - 'WEBUI_NAME=Open WebUI'
+      - 'PRODUCTION=true'
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: always
+
+  # --- Service 2: MCP GitHub Proxy ---
+  # Chuyển đổi giao thức stdio của MCP GitHub sang SSE để Open WebUI kết nối được
+  mcp-github:
+    image: ghcr.io/open-webui/mcpo:main
+    container_name: mcp-github
+    environment:
+      - GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN} # <--- Sẽ lấy từ biến môi trường
+    command: npx -y @modelcontextprotocol/server-github
+    ports:
+      - "51100:8000"
+    restart: always
+
+volumes:
+  open-webui-data: # Khai báo volume để giữ lại dữ liệu khi update
